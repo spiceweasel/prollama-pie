@@ -1,0 +1,30 @@
+[Unit]
+Description=pro-llama-server local LLM process supervisor
+After=network.target nginx.service
+Wants=nginx.service
+
+[Service]
+Type=simple
+User=prollama
+Group=prollama
+Environment=PRO_LLAMA_CONFIG=/etc/pro-llama-server/config.json
+ExecStart=/opt/pro-llama-server/venv/bin/pro-llama-daemon
+Restart=on-failure
+RestartSec=3
+UMask=0007
+RuntimeDirectory=pro-llama-server
+RuntimeDirectoryMode=0770
+StateDirectory=pro-llama-server
+StateDirectoryMode=0750
+# Child llama-server processes intentionally survive a supervisor restart.
+# On restart the supervisor validates PID + start time and reattaches.
+KillMode=process
+TimeoutStopSec=20
+# Do not set NoNewPrivileges: restricted sudo helper must acquire root.
+# Root-owned directories are protected by filesystem permissions.
+ProtectHome=read-only
+PrivateTmp=true
+# Linux GPU nodes (/dev/kfd, /dev/dri) must remain visible to the service.
+
+[Install]
+WantedBy=multi-user.target

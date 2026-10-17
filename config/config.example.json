@@ -1,0 +1,95 @@
+{
+  "binary": "/opt/llama.cpp/build/bin/llama-server",
+  "model_dirs": [
+    "/srv/models",
+    "/mnt/models"
+  ],
+  "state_dir": "/var/lib/pro-llama-server",
+  "socket": "/run/pro-llama-server/control.sock",
+  "admin_host": "127.0.0.1",
+  "admin_port": 18765,
+  "admin_username": "admin",
+  "admin_password_file": "/etc/pro-llama-server/admin-password",
+  "public_ports": {
+    "ranges": [
+      [8080, 8120]
+    ],
+    "sets": [
+      8200,
+      8201
+    ]
+  },
+  "backend_ports": {
+    "ranges": [
+      [18080, 18200]
+    ],
+    "sets": []
+  },
+  "poll_seconds": 4,
+  "min_vram_headroom_gib": 1.5,
+  "nginx_apply_command": [
+    "sudo",
+    "-n",
+    "/usr/local/sbin/pro-llama-nginx-apply"
+  ],
+  "profiles": {
+    "cpu": {
+      "description": "CPU only",
+      "env": {
+        "HIP_VISIBLE_DEVICES": "",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "gpu_ids": []
+    },
+    "rocm-0": {
+      "description": "ROCm GPU 0",
+      "env": {
+        "HIP_VISIBLE_DEVICES": "0",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "gpu_ids": [0]
+    },
+    "rocm-1": {
+      "description": "ROCm GPU 1",
+      "env": {
+        "HIP_VISIBLE_DEVICES": "1",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "gpu_ids": [1]
+    },
+    "rocm-0-1": {
+      "description": "ROCm GPUs 0 and 1",
+      "env": {
+        "HIP_VISIBLE_DEVICES": "0,1",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "gpu_ids": [0, 1]
+    },
+    "cuda-0": {
+      "description": "CUDA GPU 0",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "HIP_VISIBLE_DEVICES": ""
+      },
+      "gpu_ids": [0]
+    },
+    "cuda-1": {
+      "description": "CUDA GPU 1",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "HIP_VISIBLE_DEVICES": ""
+      },
+      "gpu_ids": [1]
+    },
+    "cuda-0-1": {
+      "description": "CUDA GPUs 0 and 1",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0,1",
+        "HIP_VISIBLE_DEVICES": ""
+      },
+      "gpu_ids": [0, 1]
+    }
+  },
+  "default_model_api_key_file": "/etc/pro-llama-server/model-keys",
+  "require_model_api_keys": true
+}

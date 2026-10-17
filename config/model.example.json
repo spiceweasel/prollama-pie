@@ -1,0 +1,29 @@
+{
+  "id": "qwen-32b",
+  "path": "/srv/models/Qwen-32B-Q4_K_M.gguf",
+  "hf_repo": "Qwen/example-repo",
+  "card": {
+    "url": "https://huggingface.co/Qwen/example-repo",
+    "parameters": "32B",
+    "license": "Check the actual model card",
+    "notes": "Replace all placeholder data with the actual model GGUF/card details.",
+    "quantization": "Q4_K_M (verify actual file)"
+  },
+  "launch": {
+    "ctx_size": 16384,
+    "threads": 8,
+    "threads_batch": 12,
+    "gpu_layers": 99,
+    "parallel": 2,
+    "batch_size": 2048,
+    "ubatch_size": 512,
+    "flash_attn": "auto",
+    "cache_type_k": "f16",
+    "cache_type_v": "f16",
+    "kv_offload": true,
+    "mlock": false,
+    "no_mmap": false,
+    "spec_type": "none",
+    "extra_args": []
+  }
+}

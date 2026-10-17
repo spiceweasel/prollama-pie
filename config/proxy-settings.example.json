@@ -1,0 +1,12 @@
+{
+  "manifest": "/var/lib/pro-llama-server/proxy.json",
+  "output": "/etc/nginx/conf.d/pro-llama-server.conf",
+  "cert": "/etc/nginx/ssl/pro-llama-server.crt",
+  "key": "/etc/nginx/ssl/pro-llama-server.key",
+  "admin_public_port": 8443,
+  "admin_backend_port": 18765,
+  "listen_address": "0.0.0.0",
+  "server_name": "llama.home.arpa",
+  "nginx_binary": "/usr/sbin/nginx",
+  "reload_command": ["/usr/bin/systemctl", "reload", "nginx"]
+}
