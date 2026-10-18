@@ -394,7 +394,7 @@ pip install -e '.[test]'
 pytest -q
 # For a nonprivileged dev run, create a real local binary, config.json,
 # and set nginx_apply_command to [] (nginx routes will NOT be configured).
-PRO_LLAMA_CONFIG=./config.local.json prollama-daemon
+PROLLAMA_CONFIG=./config.local.json prollama-daemon
 ```
 
 Project layout:

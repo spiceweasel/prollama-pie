@@ -135,7 +135,7 @@ async def run(cfg):
 
 def main():
     parser = argparse.ArgumentParser(description="prollama-pie supervisor")
-    parser.add_argument("--config", default=os.environ.get("PRO_LLAMA_CONFIG", "/etc/prollama-pie/config.json"))
+    parser.add_argument("--config", default=os.environ.get("PROLLAMA_CONFIG", "/etc/prollama-pie/config.json"))
     args = parser.parse_args()
     cfg = config_load(args.config)
     try: asyncio.run(run(cfg))
