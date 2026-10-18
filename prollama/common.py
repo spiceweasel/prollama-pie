@@ -14,6 +14,8 @@ def name(value):
     return value
 
 def port(value):
+    if isinstance(value, str):
+        value = int(value)
     if type(value) is not int or not (1024 <= value <= 65535):
         raise ValueError("port must be an integer between 1024 and 65535")
     return value
@@ -21,7 +23,7 @@ def port(value):
 def allowed_ports(spec):
     ports = set()
     for lo, hi in spec.get("ranges", []):
-        port(lo); port(hi)
+        lo, hi = int(lo), int(hi)
         if hi < lo or hi - lo > 10000:
             raise ValueError("invalid port range")
         ports.update(range(lo, hi + 1))
