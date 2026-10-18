@@ -32,15 +32,15 @@ if [ ! -f /etc/prollama-pie/model-keys ]; then
   chown root:prollama /etc/prollama-pie/model-keys
   chmod 0640 /etc/prollama-pie/model-keys
 fi
-cat > /usr/local/sbin/pro-llama-nginx-apply <<'SCRIPT'
+cat > /usr/local/sbin/prollama-nginx-apply <<'SCRIPT'
 #!/bin/sh
 set -eu
 exec /opt/prollama-pie/venv/bin/python -m pro_llama.nginx_apply
 SCRIPT
-chmod 0755 /usr/local/sbin/pro-llama-nginx-apply
-chown root:root /usr/local/sbin/pro-llama-nginx-apply
+chmod 0755 /usr/local/sbin/prollama-nginx-apply
+chown root:root /usr/local/sbin/prollama-nginx-apply
 if command -v visudo >/dev/null; then
-  echo 'prollama ALL=(root) NOPASSWD: /usr/local/sbin/pro-llama-nginx-apply' > /etc/sudoers.d/prollama-pie
+  echo 'prollama ALL=(root) NOPASSWD: /usr/local/sbin/prollama-nginx-apply' > /etc/sudoers.d/prollama-pie
   chmod 0440 /etc/sudoers.d/prollama-pie
   visudo -cf /etc/sudoers.d/prollama-pie
 else
@@ -52,7 +52,7 @@ printf '\nInstalled. Before enabling service:\n'
 printf '  1) Edit /etc/prollama-pie/config.json with the correct binary and model paths.\n'
 printf '  2) Generate TLS credentials and install to /etc/nginx/ssl (README).\n'
 printf '  3) sudo systemctl enable --now nginx\n'
-printf '  4) sudo /usr/local/sbin/pro-llama-nginx-apply\n'
+printf '  4) sudo /usr/local/sbin/prollama-nginx-apply\n'
 printf '  5) sudo systemctl enable --now prollama-pie\n'
-printf '  6) Use sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama ps\n'
+printf '  6) Use sudo -u prollama /opt/prollama-pie/venv/bin/prollama ps\n'
 printf 'Management password: sudo cat /etc/prollama-pie/admin-password\n'

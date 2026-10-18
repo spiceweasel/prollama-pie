@@ -23,8 +23,8 @@ async def test_dashboard_rejects_unauthorized_access(tmp_path):
             assert r.status==200
             r=await client.post('/api/models/scan',json={}, headers={'Authorization':header})
             assert r.status==403
-            r=await client.post('/api/models/scan',json={},headers={'Authorization':header,'X-Pro-Llama-Request':'1',
+            r=await client.post('/api/models/scan',json={},headers={'Authorization':header,'X-Prollama-Request':'1',
                          'Origin':'https://evil.example'})
             assert r.status==403
-            r=await client.post('/api/models/scan',json={},headers={'Authorization':header,'X-Pro-Llama-Request':'1'})
+            r=await client.post('/api/models/scan',json={},headers={'Authorization':header,'X-Prollama-Request':'1'})
             assert r.status==200

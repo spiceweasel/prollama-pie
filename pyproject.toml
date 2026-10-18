@@ -14,9 +14,9 @@ dependencies = ["aiohttp>=3.9,<4", "psutil>=5.9,<8"]
 test = ["pytest>=8", "pytest-asyncio>=0.23"]
 
 [project.scripts]
-pro-llama = "pro_llama.cli:main"
-pro-llama-daemon = "pro_llama.daemon:main"
-pro-llama-nginx-apply = "pro_llama.nginx_apply:main"
+prollama = "pro_llama.cli:main"
+prollama-daemon = "pro_llama.daemon:main"
+prollama-nginx-apply = "pro_llama.nginx_apply:main"
 
 [tool.setuptools.packages.find]
 include = ["pro_llama*"]

@@ -30,7 +30,7 @@
   "nginx_apply_command": [
     "sudo",
     "-n",
-    "/usr/local/sbin/pro-llama-nginx-apply"
+    "/usr/local/sbin/prollama-nginx-apply"
   ],
   "profiles": {
     "cpu": {

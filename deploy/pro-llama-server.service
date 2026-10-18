@@ -8,7 +8,7 @@ Type=simple
 User=prollama
 Group=prollama
 Environment=PRO_LLAMA_CONFIG=/etc/prollama-pie/config.json
-ExecStart=/opt/prollama-pie/venv/bin/pro-llama-daemon
+ExecStart=/opt/prollama-pie/venv/bin/prollama-daemon
 Restart=on-failure
 RestartSec=3
 UMask=0007

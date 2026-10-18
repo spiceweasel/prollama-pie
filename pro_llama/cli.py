@@ -13,7 +13,7 @@ async def request(sock, method, path, data=None):
     connector = aiohttp.UnixConnector(path=sock)
     async with aiohttp.ClientSession(connector=connector) as session:
         async with session.request(method, "http://localhost" + path, json=data,
-                                   headers={"X-Pro-Llama-Request": "1"}, timeout=aiohttp.ClientTimeout(total=120)) as resp:
+                                   headers={"X-Prollama-Request": "1"}, timeout=aiohttp.ClientTimeout(total=120)) as resp:
             text = await resp.text()
             if resp.status >= 400: raise RuntimeError(f"{resp.status}: {text}")
             return json.loads(text) if text else {}
@@ -25,7 +25,7 @@ def output(data, json_mode=False):
     print(json.dumps(data, indent=2) if json_mode else data)
 
 def main():
-    parser = argparse.ArgumentParser(prog="pro-llama", description="Manage llama-server instances without containers")
+    parser = argparse.ArgumentParser(prog="prollama", description="Manage llama-server instances without containers")
     parser.add_argument("--config", default=os.environ.get("PRO_LLAMA_CONFIG", "/etc/prollama-pie/config.json"))
     parser.add_argument("--json", action="store_true", help="machine-readable output")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -113,6 +113,6 @@ def main():
                 payload = {}; url = f"/api/scenes/{args.name}/apply"
             output(asyncio.run(request(sock, "POST", url, payload)), args.json)
     except (OSError, ValueError, RuntimeError, aiohttp.ClientError) as exc:
-        sys.exit(f"pro-llama: {exc}")
+        sys.exit(f"prollama: {exc}")
 
 if __name__ == "__main__": main()

@@ -41,8 +41,8 @@ async def auth_middleware(req, handler):
     if req.method not in ("GET", "HEAD", "OPTIONS"):
         # JSON + custom header stop ordinary cross-site form posts. Same-origin
         # Origin is additionally required when a browser supplies it.
-        if req.headers.get("X-Pro-Llama-Request") != "1":
-            raise web.HTTPForbidden(text="missing X-Pro-Llama-Request header")
+        if req.headers.get("X-Prollama-Request") != "1":
+            raise web.HTTPForbidden(text="missing X-Prollama-Request header")
         origin = req.headers.get("Origin")
         if origin:
             from urllib.parse import urlsplit

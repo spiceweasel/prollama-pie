@@ -112,7 +112,7 @@ def apply(settings_file=PROXY_SETTINGS):
     if before == data.encode():
         return "no change"
     # Validate that newly introduced listen ports are not owned by other
-    # processes. Existing pro-llama nginx ports already belong to nginx.
+    # processes. Existing prollama nginx ports already belong to nginx.
     previous_ports = set(map(int, re.findall(r"^\s*listen\s+[\d.]+:(\d+)\s+ssl;", (before or b"").decode(), flags=re.M)))
     requested_ports = set(map(int, re.findall(r"^\s*listen\s+[\d.]+:(\d+)\s+ssl;", data, flags=re.M)))
     for p in requested_ports - previous_ports:
@@ -120,7 +120,7 @@ def apply(settings_file=PROXY_SETTINGS):
             try: sock.bind((settings.get("listen_address", "0.0.0.0"), p))
             except OSError as e: raise ValueError(f"public port {p} already in use: {e}") from e
     conf_file.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(prefix=".pro-llama-", dir=conf_file.parent)
+    fd, tmp = tempfile.mkstemp(prefix=".prollama-", dir=conf_file.parent)
     try:
         os.fchmod(fd, 0o644)
         with os.fdopen(fd, "w") as f:
@@ -139,7 +139,7 @@ def apply(settings_file=PROXY_SETTINGS):
         # when nginx -t fails or reload returns nonzero.
         if before is None: conf_file.unlink(missing_ok=True)
         else:
-            fd, rollback = tempfile.mkstemp(prefix=".pro-llama-revert-", dir=conf_file.parent)
+            fd, rollback = tempfile.mkstemp(prefix=".prollama-revert-", dir=conf_file.parent)
             try:
                 with os.fdopen(fd, "wb") as f: f.write(before)
                 os.chmod(rollback, 0o644)
@@ -154,7 +154,7 @@ def main():
     if os.geteuid() != 0:
         sys.exit("must run as root (via tightly scoped sudoers helper)")
     if len(sys.argv) != 1:
-        sys.exit("usage: pro-llama-nginx-apply (no arguments)")
+        sys.exit("usage: prollama-nginx-apply (no arguments)")
     try: print(apply())
     except Exception as e: sys.exit(f"nginx apply: {e}")
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Generate a local private CA plus server certificate with correct DNS/IP SANs.
-# Usage: ./cert/generate_cert.sh llama.home.arpa [192.168.1.20] [/tmp/pro-llama-pki]
+# Usage: ./cert/generate_cert.sh llama.home.arpa [192.168.1.20] [/tmp/prollama-pki]
 set -euo pipefail
 if [ "$#" -lt 1 ]; then echo "usage: $0 HOSTNAME [SERVER_IP] [OUTPUT_DIR]" >&2; exit 2; fi
 HOST="$1"; IP="${2:-}"; OUT="${3:-./cert/output}"
@@ -8,7 +8,7 @@ HOST="$1"; IP="${2:-}"; OUT="${3:-./cert/output}"
 if [[ -n "$IP" && ! "$IP" =~ ^[0-9a-fA-F.:]+$ ]]; then echo "invalid IP" >&2; exit 2; fi
 umask 077
 mkdir -p "$OUT"
-CAKEY="$OUT/pro-llama-ca.key"; CACRT="$OUT/pro-llama-ca.crt"
+CAKEY="$OUT/prollama-ca.key"; CACRT="$OUT/prollama-ca.crt"
 KEY="$OUT/prollama-pie.key"; CSR="$OUT/prollama-pie.csr"; CRT="$OUT/prollama-pie.crt"
 if [[ -e "$CAKEY" || -e "$KEY" || -e "$CACRT" ]]; then echo "refusing to overwrite existing cert/key files in $OUT" >&2; exit 1; fi
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out "$CAKEY"

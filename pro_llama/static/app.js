@@ -6,7 +6,7 @@ const bytes = n => n == null ? 'unknown' : (Number(n)/1073741824).toFixed(2)+' G
 const pct = (a,b) => b ? Math.min(100,100*a/b) : 0;
 function write(x){$('console').textContent = typeof x === 'string' ? x : JSON.stringify(x,null,2)}
 async function call(path, method='GET', data){
-  const r=await fetch(path,{method,headers:{'Content-Type':'application/json','X-Pro-Llama-Request':'1'},body:data===undefined ? undefined : JSON.stringify(data),credentials:'same-origin'});
+  const r=await fetch(path,{method,headers:{'Content-Type':'application/json','X-Prollama-Request':'1'},body:data===undefined ? undefined : JSON.stringify(data),credentials:'same-origin'});
   const txt=await r.text();let obj;try{obj=JSON.parse(txt)}catch{obj=txt}
   if(!r.ok) throw Error(typeof obj==='string'?obj:JSON.stringify(obj));return obj;
 }

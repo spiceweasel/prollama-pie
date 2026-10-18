@@ -107,21 +107,21 @@ Do not replace the entire JSON file with the small fragment above; edit the corr
 ```bash
 # From the cloned repo. The IP is optional but lets clients connect by IP
 # without triggering a certificate name mismatch.
-./cert/generate_cert.sh llama.home.arpa 192.168.1.50 /tmp/pro-llama-pki
+./cert/generate_cert.sh llama.home.arpa 192.168.1.50 /tmp/prollama-pki
 
 sudo install -d -m 0700 /etc/nginx/ssl
-sudo install -o root -g root -m 0644 /tmp/pro-llama-pki/prollama-pie.crt /etc/nginx/ssl/
-sudo install -o root -g root -m 0600 /tmp/pro-llama-pki/prollama-pie.key /etc/nginx/ssl/
+sudo install -o root -g root -m 0644 /tmp/prollama-pki/prollama-pie.crt /etc/nginx/ssl/
+sudo install -o root -g root -m 0600 /tmp/prollama-pki/prollama-pie.key /etc/nginx/ssl/
 # Keep CA public cert available for enrolling clients; isolate CA private key
 sudo install -d -m 0700 /etc/prollama-pie/pki
-sudo install -m 0644 /tmp/pro-llama-pki/pro-llama-ca.crt /etc/prollama-pie/pki/
-# Move /tmp/pro-llama-pki/pro-llama-ca.key to OFFLINE secure storage.
+sudo install -m 0644 /tmp/prollama-pki/prollama-ca.crt /etc/prollama-pie/pki/
+# Move /tmp/prollama-pki/prollama-ca.key to OFFLINE secure storage.
 
 # In root-owned /etc/prollama-pie/proxy-settings.json, match the hostname,
 # certificate paths, frontend admin port and backend admin port.
 sudoedit /etc/prollama-pie/proxy-settings.json
 sudo systemctl enable --now nginx
-sudo /usr/local/sbin/pro-llama-nginx-apply  # checks nginx -t; graceful reload
+sudo /usr/local/sbin/prollama-nginx-apply  # checks nginx -t; graceful reload
 sudo systemctl enable --now prollama-pie
 sudo systemctl status prollama-pie --no-pager
 ```
@@ -138,23 +138,23 @@ sudo ufw allow from 192.168.1.0/24 to any port 8080:8120 proto tcp
 
 ### Client CA trust (do NOT copy private keys)
 
-Copy **`pro-llama-ca.crt`**, not the leaf cert, to each trusted client:
+Copy **`prollama-ca.crt`**, not the leaf cert, to each trusted client:
 
 ```bash
 # On the server, place the PUBLIC CA cert somewhere your SSH account can read:
-sudo install -m 0644 /etc/prollama-pie/pki/pro-llama-ca.crt /tmp/pro-llama-ca.crt
+sudo install -m 0644 /etc/prollama-pie/pki/prollama-ca.crt /tmp/prollama-ca.crt
 # On the client:
-scp user@server_machine:/tmp/pro-llama-ca.crt ./pro-llama-ca.crt
+scp user@server_machine:/tmp/prollama-ca.crt ./prollama-ca.crt
 # You can remove the temporary public certificate afterward.
 ```
 
 | Client | Steps |
 |---|---|
-| Ubuntu/Debian | `sudo cp pro-llama-ca.crt /usr/local/share/ca-certificates/pro-llama-ca.crt && sudo update-ca-certificates` |
-| Fedora/RHEL | `sudo cp pro-llama-ca.crt /etc/pki/ca-trust/source/anchors/ && sudo update-ca-trust extract` |
-| Windows (Administrator) | `certutil -addstore -f Root pro-llama-ca.crt` (adds a trusted root; do this only on machines you control) |
+| Ubuntu/Debian | `sudo cp prollama-ca.crt /usr/local/share/ca-certificates/prollama-ca.crt && sudo update-ca-certificates` |
+| Fedora/RHEL | `sudo cp prollama-ca.crt /etc/pki/ca-trust/source/anchors/ && sudo update-ca-trust extract` |
+| Windows (Administrator) | `certutil -addstore -f Root prollama-ca.crt` (adds a trusted root; do this only on machines you control) |
 | Firefox | Settings → Privacy & Security → Certificates → View Certificates → Authorities → Import CA; enable trust for websites. Alternatively configure `security.enterprise_roots.enabled` appropriately. |
-| Java/JVM | Prefer a dedicated truststore: `keytool -importcert -alias pro-llama -file pro-llama-ca.crt -keystore ./pro-llama-truststore.p12 -storetype PKCS12`; start Java with `-Djavax.net.ssl.trustStore=/path/pro-llama-truststore.p12`. |
+| Java/JVM | Prefer a dedicated truststore: `keytool -importcert -alias prollama -file prollama-ca.crt -keystore ./prollama-truststore.p12 -storetype PKCS12`; start Java with `-Djavax.net.ssl.trustStore=/path/prollama-truststore.p12`. |
 
 Configure internal DNS or `/etc/hosts` so `llama.home.arpa` resolves to your actual server. For browser error diagnosis: verify that the hostname/IP in your URL is a **subjectAltName** in the server certificate. The supplied certificate script creates a long-lived private CA and a 397-day leaf certificate; renew the leaf before it expires and gracefully reload nginx.
 
@@ -169,7 +169,7 @@ sudo cat /etc/prollama-pie/admin-password
 sudo cat /etc/prollama-pie/model-keys
 
 # Example test, replace with actual hostname/key:
-curl --cacert ./pro-llama-ca.crt \
+curl --cacert ./prollama-ca.crt \
   -H 'Authorization: Bearer YOUR_MODEL_API_KEY' \
   https://llama.home.arpa:8080/v1/models
 ```
@@ -181,43 +181,43 @@ The default key file is passed to **every new** llama-server as `--api-key-file`
 To access the local Unix socket without `sudo`, add a trusted admin account to the `prollama` group, then log out/in. Group members have **full instance-management access**. Or run the CLI as the service account:
 
 ```bash
-sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama models
-sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama scan
-sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama profiles
-sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama doctor
-sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama up qwen-main qwen-32b \
+sudo -u prollama /opt/prollama-pie/venv/bin/prollama models
+sudo -u prollama /opt/prollama-pie/venv/bin/prollama scan
+sudo -u prollama /opt/prollama-pie/venv/bin/prollama profiles
+sudo -u prollama /opt/prollama-pie/venv/bin/prollama doctor
+sudo -u prollama /opt/prollama-pie/venv/bin/prollama up qwen-main qwen-32b \
   --profile rocm-0 --port 8080 --ctx-size 32768 --gpu-layers 99 \
   --threads 8 --threads-batch 12 --parallel 2 --flash-attn auto
-sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama ps
-sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama logs qwen-main
-sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama down qwen-main
+sudo -u prollama /opt/prollama-pie/venv/bin/prollama ps
+sudo -u prollama /opt/prollama-pie/venv/bin/prollama logs qwen-main
+sudo -u prollama /opt/prollama-pie/venv/bin/prollama down qwen-main
 # In a genuine emergency only:
-sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama down qwen-main --force
+sudo -u prollama /opt/prollama-pie/venv/bin/prollama down qwen-main --force
 ```
 
-The `up` command creates a fresh named instance; it does not restart an existing one implicitly. Normal `down` switches the instance to `draining`: nginx stops accepting new traffic on its public port, but existing nginx workers and the backend process remain until established backend connections are gone. There is intentionally **no fixed force-kill timeout** while a connection may be active. Force stop is explicitly disruptive. `pro-llama ps` shows `draining` state until shutdown.
+The `up` command creates a fresh named instance; it does not restart an existing one implicitly. Normal `down` switches the instance to `draining`: nginx stops accepting new traffic on its public port, but existing nginx workers and the backend process remain until established backend connections are gone. There is intentionally **no fixed force-kill timeout** while a connection may be active. Force stop is explicitly disruptive. `prollama ps` shows `draining` state until shutdown.
 
 Useful commands:
 
 ```text
-pro-llama ps                   # name, model, GPU profile, both ports, PID, status
-pro-llama status               # detailed instance + hardware state
-pro-llama models               # model catalog and local paths
-pro-llama model-add ID PATH [--hf-repo ORG/REPO] [--card ./card.json]
-pro-llama model-info ID        # size on disk, GGUF header, HF card, defaults
-pro-llama model-import ./my-model.json  # JSON catalog entry + default launch
-pro-llama scan                 # discover new *.gguf in model_dirs
-pro-llama profiles             # named CPU/HIP/CUDA environments
-pro-llama fit --profile rocm-both --ctx 32768
-pro-llama up NAME MODEL_ID [--profile rocm-0] [--port 8080] [...]
-pro-llama down NAME [--force]
-pro-llama logs NAME            # most recent 24 KB
-pro-llama scenes               # saved scene definitions
-pro-llama scene save-running NAME
-pro-llama scene import ./my-scene.json
-pro-llama scene up NAME        # launch a saved group of instances
-pro-llama doctor               # hardware and last proxy error
-pro-llama --json ps            # machine-readable JSON
+prollama ps                   # name, model, GPU profile, both ports, PID, status
+prollama status               # detailed instance + hardware state
+prollama models               # model catalog and local paths
+prollama model-add ID PATH [--hf-repo ORG/REPO] [--card ./card.json]
+prollama model-info ID        # size on disk, GGUF header, HF card, defaults
+prollama model-import ./my-model.json  # JSON catalog entry + default launch
+prollama scan                 # discover new *.gguf in model_dirs
+prollama profiles             # named CPU/HIP/CUDA environments
+prollama fit --profile rocm-both --ctx 32768
+prollama up NAME MODEL_ID [--profile rocm-0] [--port 8080] [...]
+prollama down NAME [--force]
+prollama logs NAME            # most recent 24 KB
+prollama scenes               # saved scene definitions
+prollama scene save-running NAME
+prollama scene import ./my-scene.json
+prollama scene up NAME        # launch a saved group of instances
+prollama doctor               # hardware and last proxy error
+prollama --json ps            # machine-readable JSON
 ```
 
 ### Reusable scenes
@@ -225,9 +225,9 @@ pro-llama --json ps            # machine-readable JSON
 Save the current running set (name, model ID, hardware profile, exact public port, launch options):
 
 ```bash
-pro-llama scene save-running research-day
-pro-llama down small-cpu
-pro-llama scene up research-day
+prollama scene save-running research-day
+prollama down small-cpu
+prollama scene up research-day
 ```
 
 Or import a scene (same schema used by the web UI):
@@ -242,7 +242,7 @@ Or import a scene (same schema used by the web UI):
 }
 ```
 
-Import and apply with `pro-llama scene import ./two-rocms.json` then `pro-llama scene up two-rocms`. If a scene fails partway through launch, the supervisor force-stops instances it started in this batch; preexisting instances are left alone. A scene is a **launch set**, not a continuously reconciled deployment: manually stopping one member does not restart it.
+Import and apply with `prollama scene import ./two-rocms.json` then `prollama scene up two-rocms`. If a scene fails partway through launch, the supervisor force-stops instances it started in this batch; preexisting instances are left alone. A scene is a **launch set**, not a continuously reconciled deployment: manually stopping one member does not restart it.
 
 ### GPU environments and multi-GPU
 
@@ -272,7 +272,7 @@ Register a model with card metadata:
  "launch":{"ctx_size":16384,"gpu_layers":99,"flash_attn":"auto","threads":8,"parallel":2}}
 ```
 
-`POST /api/models` accepts this object; `pro-llama model-import ./config/model.example.json` reads a complete model declaration from an editable JSON file. CLI `model-add` supports `--card card.json` (model default launch settings can be saved through the web JSON form or API). Model metadata is *local*, not downloaded or verified against Hugging Face. Never assume metadata matches the exact GGUF without confirming it yourself. Importing a model under the same ID updates its catalog record but does **not** mutate a process already running.
+`POST /api/models` accepts this object; `prollama model-import ./config/model.example.json` reads a complete model declaration from an editable JSON file. CLI `model-add` supports `--card card.json` (model default launch settings can be saved through the web JSON form or API). Model metadata is *local*, not downloaded or verified against Hugging Face. Never assume metadata matches the exact GGUF without confirming it yourself. Importing a model under the same ID updates its catalog record but does **not** mutate a process already running.
 
 ## Web dashboard
 
@@ -326,7 +326,7 @@ The generated `/etc/nginx/conf.d/prollama-pie.conf` is an **`http {}` include** 
 
 Nginx settings include TLS 1.2/1.3 only; separate root-owned cert/key; session cache with tickets disabled; 4k SSL buffer; websocket Upgrade support; Host/X-Forwarded headers; no proxy response/request buffering (suitable for SSE streaming); 3600s proxy read/send timeouts; no proxy cache/compression. **Nginx reloads are graceful**, so adding/removing ports preserves existing connections *under normal nginx behavior*. Nginx will fork new workers and retain old workers until current requests finish. **Do not configure a short `worker_shutdown_timeout` globally**, use `nginx -t` before reload, and avoid administrative hard restarts while streams run.
 
-If a new public port is occupied by an unrelated service, pro-llama refuses it. If backend port pools are exhausted, it reports an error rather than reusing a running instance’s port. Config generation is atomic; failed syntax tests restore the old config and do not invoke reload. Actual reload failures are reported and file state restored; verify nginx error logs if the system is in a degraded state.
+If a new public port is occupied by an unrelated service, prollama refuses it. If backend port pools are exhausted, it reports an error rather than reusing a running instance’s port. Config generation is atomic; failed syntax tests restore the old config and do not invoke reload. Actual reload failures are reported and file state restored; verify nginx error logs if the system is in a degraded state.
 
 **Graceful stop limitations:** A drain waits until there are no *observable* established TCP connections to the backend across three successive polls; it does not instrument llama.cpp's internal request scheduler or provide perfect tracking of idle HTTP keep-alive connections. If connection inspection is blocked, it intentionally keeps draining instead of killing a potentially active stream. An unrelated forced process kill, `systemctl restart nginx`, machine crash, SSL termination at a different proxy, or externally configured nginx worker timeout can still interrupt traffic. Do **not** promise uninterrupted streams under those circumstances.
 
@@ -352,11 +352,11 @@ The CLI connects to `/run/prollama-pie/control.sock`; it is group-protected. The
 | `POST /api/scenes/save-running` | Save current running set |
 | `POST /api/scenes/{name}/apply` | Start entire saved set |
 
-All POST requests require `X-Pro-Llama-Request: 1` and application-level Basic auth (on TCP). You can automate the API with `curl --cacert`, e.g.:
+All POST requests require `X-Prollama-Request: 1` and application-level Basic auth (on TCP). You can automate the API with `curl --cacert`, e.g.:
 
 ```bash
-curl --cacert pro-llama-ca.crt -u admin:YOUR_ADMIN_PASSWORD \
-  -H 'X-Pro-Llama-Request: 1' -H 'Content-Type: application/json' \
+curl --cacert prollama-ca.crt -u admin:YOUR_ADMIN_PASSWORD \
+  -H 'X-Prollama-Request: 1' -H 'Content-Type: application/json' \
   -d '{"name":"small-cpu","model_id":"llama-8b","profile":"cpu","public_port":8082,"launch":{"gpu_layers":0,"threads":16,"ctx_size":8192}}' \
   https://llama.home.arpa:8443/api/instances
 ```
@@ -368,11 +368,11 @@ sudo systemctl status prollama-pie nginx --no-pager
 sudo journalctl -u prollama-pie -n 150 --no-pager
 sudo /usr/sbin/nginx -t
 sudo ss -ltnp | grep -E ':(8443|8080|18080|18765)\b'
-sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama doctor
-sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama logs INSTANCE_NAME
+sudo -u prollama /opt/prollama-pie/venv/bin/prollama doctor
+sudo -u prollama /opt/prollama-pie/venv/bin/prollama logs INSTANCE_NAME
 ```
 
-**`502 Bad Gateway`:** model is loading/crashed or wrong backend port; inspect `pro-llama ps` and model logs. **Nginx refuses to reload:** check `nginx -t`, port collisions, cert readability and error log. **GPU telemetry empty:** ROCm sysfs entries absent or not readable, `nvidia-smi` missing, or user lacks privileges; see `rocm-smi` and `journalctl`. **`Permission denied` to GPU:** ensure system `prollama` is member of appropriate `render`/`video` groups, verify `/dev/kfd` and `/dev/dri/*`, and restart the supervisor for new group membership. **GGUF found but won't start:** confirm executable has required backend/features, `llama-server --help`, file permissions, quantization architecture and free memory. **HTTPS hostname mismatch:** regenerate certificate with correct SAN, install it and reload nginx; trust the private CA on client.
+**`502 Bad Gateway`:** model is loading/crashed or wrong backend port; inspect `prollama ps` and model logs. **Nginx refuses to reload:** check `nginx -t`, port collisions, cert readability and error log. **GPU telemetry empty:** ROCm sysfs entries absent or not readable, `nvidia-smi` missing, or user lacks privileges; see `rocm-smi` and `journalctl`. **`Permission denied` to GPU:** ensure system `prollama` is member of appropriate `render`/`video` groups, verify `/dev/kfd` and `/dev/dri/*`, and restart the supervisor for new group membership. **GGUF found but won't start:** confirm executable has required backend/features, `llama-server --help`, file permissions, quantization architecture and free memory. **HTTPS hostname mismatch:** regenerate certificate with correct SAN, install it and reload nginx; trust the private CA on client.
 
 **Systemd:** `KillMode=process` is intentional: only the supervisor receives normal service stop signals; child llama-server processes continue running, and the next supervisor instance reattaches by PID and process creation timestamp. To terminate models intentionally, use CLI `down`. **Restarting only the daemon should not stop a working model stream.** But shutting down the entire machine or killing a llama-server process will.
 
@@ -394,7 +394,7 @@ pip install -e '.[test]'
 pytest -q
 # For a nonprivileged dev run, create a real local binary, config.json,
 # and set nginx_apply_command to [] (nginx routes will NOT be configured).
-PRO_LLAMA_CONFIG=./config.local.json pro-llama-daemon
+PRO_LLAMA_CONFIG=./config.local.json prollama-daemon
 ```
 
 Project layout:
