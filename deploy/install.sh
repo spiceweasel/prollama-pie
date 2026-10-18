@@ -15,11 +15,24 @@ ln -sfn /opt/prollama-pie/venv/bin/prollama /usr/local/bin/prollama
 chown -R root:root /opt/prollama-pie
 install -d -m 0750 -o root -g prollama /etc/prollama-pie
 install -d -m 0750 -o prollama -g prollama /var/lib/prollama-pie
-if [ ! -f /etc/prollama-pie/config.json ]; then
-  install -m 0640 -o root -g prollama "$ROOT/config/config.example.json" /etc/prollama-pie/config.json
+
+# Backup and install config.json
+if [ -f /etc/prollama-pie/config.json ]; then
+  cp -p /etc/prollama-pie/config.json /etc/prollama-pie/config.json.bak
 fi
-if [ ! -f /etc/prollama-pie/proxy-settings.json ]; then
-  install -m 0600 -o root -g root "$ROOT/config/proxy-settings.example.json" /etc/prollama-pie/proxy-settings.json
+install -m 0640 -o root -g prollama "$ROOT/config/config.example.json" /etc/prollama-pie/config.json
+
+# Backup and install proxy-settings.json
+if [ -f /etc/prollama-pie/proxy-settings.json ]; then
+  cp -p /etc/prollama-pie/proxy-settings.json /etc/prollama-pie/proxy-settings.json.bak
+fi
+install -m 0600 -o root -g root "$ROOT/config/proxy-settings.example.json" /etc/prollama-pie/proxy-settings.json
+
+# Backup and install admin-password
+if [ -f /etc/prollama-pie/admin-password ]; then
+  cp -p /etc/prollama-pie/admin-password /etc/prollama-pie/admin-password.bak
+  chown root:prollama /etc/prollama-pie/admin-password.bak
+  chmod 0640 /etc/prollama-pie/admin-password.bak
 fi
 if [ ! -f /etc/prollama-pie/admin-password ]; then
   umask 077
@@ -27,12 +40,20 @@ if [ ! -f /etc/prollama-pie/admin-password ]; then
   chown root:prollama /etc/prollama-pie/admin-password
   chmod 0640 /etc/prollama-pie/admin-password
 fi
+
+# Backup and install model-keys
+if [ -f /etc/prollama-pie/model-keys ]; then
+  cp -p /etc/prollama-pie/model-keys /etc/prollama-pie/model-keys.bak
+  chown root:prollama /etc/prollama-pie/model-keys.bak
+  chmod 0640 /etc/prollama-pie/model-keys.bak
+fi
 if [ ! -f /etc/prollama-pie/model-keys ]; then
   umask 077
   openssl rand -hex 32 > /etc/prollama-pie/model-keys
   chown root:prollama /etc/prollama-pie/model-keys
   chmod 0640 /etc/prollama-pie/model-keys
 fi
+
 cat > /usr/local/sbin/prollama-nginx-apply <<'SCRIPT'
 #!/bin/sh
 set -eu
