@@ -19,8 +19,10 @@ def memory():
 
 def gpus():
     items = []
-    drm = Path("/sys/class/drm")
-    for card in sorted(drm.glob("card[0-9]*"), key=lambda p: int(p.name[4:])):
+    drm = Path("/sys/class/drm")    
+    for card in sorted((p for p in drm.glob("card*") if re.fullmatch(r"card\d+", p.name)),
+        key=lambda p: int(p.name[4:])
+    ):
         d = card / "device"
         total = d / "mem_info_vram_total"
         used = d / "mem_info_vram_used"
