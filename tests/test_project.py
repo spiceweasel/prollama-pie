@@ -3,10 +3,10 @@ import os
 import signal
 from pathlib import Path
 import pytest
-from pro_llama.common import allowed_ports, atomic_json, read_json
-from pro_llama.gguf import estimate_kv
-from pro_llama.nginx_apply import render
-from pro_llama.supervisor import Supervisor, build_argv
+from prollama.common import allowed_ports, atomic_json, read_json
+from prollama.gguf import estimate_kv
+from prollama.nginx_apply import render
+from prollama.supervisor import Supervisor, build_argv
 
 HERE = Path(__file__).parent
 

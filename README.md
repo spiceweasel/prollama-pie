@@ -401,7 +401,7 @@ Project layout:
 
 ```text
 prollama-pie/
-├── pro_llama/
+├── prollama/
 │   ├── supervisor.py      # process launch/recovery, health, draining, scenes
 │   ├── daemon.py          # authenticated dashboard + JSON/Unix socket API
 │   ├── cli.py             # human and JSON CLI

@@ -1,8 +1,8 @@
 import base64
 import pytest
 from aiohttp.test_utils import TestClient, TestServer
-from pro_llama.daemon import make_app
-from pro_llama.supervisor import Supervisor
+from prollama.daemon import make_app
+from prollama.supervisor import Supervisor
 
 @pytest.mark.asyncio
 async def test_dashboard_rejects_unauthorized_access(tmp_path):

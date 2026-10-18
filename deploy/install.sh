@@ -8,9 +8,10 @@ id prollama &>/dev/null || useradd --system --gid prollama --home-dir /var/lib/p
 for group in render video; do getent group "$group" >/dev/null && usermod -aG "$group" prollama || true; done
 install -d -m 0755 /opt/prollama-pie
 install -d -m 0755 /opt/prollama-pie/src
-cp -a "$ROOT/pro_llama" "$ROOT/pyproject.toml" /opt/prollama-pie/src/
+cp -a "$ROOT/prollama" "$ROOT/pyproject.toml" /opt/prollama-pie/src/
 python3 -m venv /opt/prollama-pie/venv
 /opt/prollama-pie/venv/bin/pip install --disable-pip-version-check /opt/prollama-pie/src
+ln -sfn /opt/prollama-pie/venv/bin/prollama /usr/local/bin/prollama
 chown -R root:root /opt/prollama-pie
 install -d -m 0750 -o root -g prollama /etc/prollama-pie
 install -d -m 0750 -o prollama -g prollama /var/lib/prollama-pie
@@ -35,7 +36,7 @@ fi
 cat > /usr/local/sbin/prollama-nginx-apply <<'SCRIPT'
 #!/bin/sh
 set -eu
-exec /opt/prollama-pie/venv/bin/python -m pro_llama.nginx_apply
+exec /opt/prollama-pie/venv/bin/python -m prollama.nginx_apply
 SCRIPT
 chmod 0755 /usr/local/sbin/prollama-nginx-apply
 chown root:root /usr/local/sbin/prollama-nginx-apply

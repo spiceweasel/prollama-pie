@@ -13,7 +13,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import pytest
-from pro_llama.nginx_apply import render
+from prollama.nginx_apply import render
 
 pytestmark = pytest.mark.skipif(not shutil.which('nginx') or not shutil.which('openssl'), reason='requires nginx and openssl')
 
