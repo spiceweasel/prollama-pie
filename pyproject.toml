@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pro-llama-server"
+name = "prollama-pie"
 version = "0.1.0"
 description = "Container-free multi-instance llama-server supervisor with nginx TLS gateway"
 requires-python = ">=3.10"

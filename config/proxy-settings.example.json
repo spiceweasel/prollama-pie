@@ -1,8 +1,8 @@
 {
-  "manifest": "/var/lib/pro-llama-server/proxy.json",
-  "output": "/etc/nginx/conf.d/pro-llama-server.conf",
-  "cert": "/etc/nginx/ssl/pro-llama-server.crt",
-  "key": "/etc/nginx/ssl/pro-llama-server.key",
+  "manifest": "/var/lib/prollama-pie/proxy.json",
+  "output": "/etc/nginx/conf.d/prollama-pie.conf",
+  "cert": "/etc/nginx/ssl/prollama-pie.crt",
+  "key": "/etc/nginx/ssl/prollama-pie.key",
   "admin_public_port": 8443,
   "admin_backend_port": 18765,
   "listen_address": "0.0.0.0",

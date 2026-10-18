@@ -9,11 +9,11 @@ if [[ -n "$IP" && ! "$IP" =~ ^[0-9a-fA-F.:]+$ ]]; then echo "invalid IP" >&2; ex
 umask 077
 mkdir -p "$OUT"
 CAKEY="$OUT/pro-llama-ca.key"; CACRT="$OUT/pro-llama-ca.crt"
-KEY="$OUT/pro-llama-server.key"; CSR="$OUT/pro-llama-server.csr"; CRT="$OUT/pro-llama-server.crt"
+KEY="$OUT/prollama-pie.key"; CSR="$OUT/prollama-pie.csr"; CRT="$OUT/prollama-pie.crt"
 if [[ -e "$CAKEY" || -e "$KEY" || -e "$CACRT" ]]; then echo "refusing to overwrite existing cert/key files in $OUT" >&2; exit 1; fi
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out "$CAKEY"
 openssl req -new -x509 -key "$CAKEY" -sha256 -days 3650 -out "$CACRT" \
-  -subj "/CN=pro-llama-server Local CA" -addext "basicConstraints=critical,CA:TRUE,pathlen:0" \
+  -subj "/CN=prollama-pie Local CA" -addext "basicConstraints=critical,CA:TRUE,pathlen:0" \
   -addext "keyUsage=critical,keyCertSign,cRLSign" -addext "subjectKeyIdentifier=hash"
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out "$KEY"
 openssl req -new -key "$KEY" -out "$CSR" -subj "/CN=$HOST"

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>pro-llama-server</title><link rel="stylesheet" href="/static/style.css"></head><body>
-<header><div><h1>pro-llama-server <small>v0.1</small></h1><p>Local llama.cpp process orchestration · HTTPS gateway · no containers</p></div><div id="clock"></div></header>
+<title>prollama-pie</title><link rel="stylesheet" href="/static/style.css"></head><body>
+<header><div><h1>prollama-pie <small>v0.1</small></h1><p>Local llama.cpp process orchestration · HTTPS gateway · no containers</p></div><div id="clock"></div></header>
 <main>
 <section><h2>Hardware <span class="muted">Live every 5 seconds</span></h2><div id="hardware" class="cards"></div></section>
 <section><div class="flex between"><h2>Instances</h2><button id="refresh">Refresh</button></div><div id="instances" class="cards"></div></section>
@@ -18,7 +18,7 @@
 <div class="two"><label>Draft model <span title="Draft and main models must have compatible tokenization. Both consume memory.">ⓘ</span><select name="draft_model_id" id="draftModel"><option value="">None</option></select></label><label>Draft tokens <span title="Maximum draft tokens to propose per speculative round. Start with 3-5; benchmark.">ⓘ</span><input name="draft_tokens" type="number" min="1" max="64" value="4"></label></div>
 <div class="two"><label>K cache dtype <span title="Quantizing K reduces memory, with possible accuracy tradeoffs. This does not relocate cache to RAM.">ⓘ</span><select name="cache_type_k"><option>f16</option><option>q8_0</option><option>q4_0</option><option>f32</option><option>bf16</option></select></label><label>V cache dtype <span title="Quantizing V reduces memory; backend support may vary. Use --no-kv-offload to keep KV in system memory.">ⓘ</span><select name="cache_type_v"><option>f16</option><option>q8_0</option><option>q4_0</option><option>f32</option><option>bf16</option></select></label></div>
 <div class="checkboxes"><label><input type="checkbox" name="kv_offload" checked> Offload KV to GPU</label><label><input type="checkbox" name="mlock"> Lock RAM pages (--mlock)</label><label><input type="checkbox" name="no_mmap"> Disable mmap</label></div>
-<label>llama-server API key file (optional)<input name="api_key_file" placeholder="/etc/pro-llama-server/model-keys"></label>
+<label>llama-server API key file (optional)<input name="api_key_file" placeholder="/etc/prollama-pie/model-keys"></label>
 <div class="flex"><button type="submit" class="primary">Launch</button><button type="button" id="fitButton">Estimate memory fit</button></div></form>
 <div id="fit" class="small"></div></section>
 <section><h2>Models & scenes</h2><button id="scan">Scan configured model directories</button><div id="models" class="list"></div>

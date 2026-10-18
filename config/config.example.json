@@ -4,12 +4,12 @@
     "/srv/models",
     "/mnt/models"
   ],
-  "state_dir": "/var/lib/pro-llama-server",
-  "socket": "/run/pro-llama-server/control.sock",
+  "state_dir": "/var/lib/prollama-pie",
+  "socket": "/run/prollama-pie/control.sock",
   "admin_host": "127.0.0.1",
   "admin_port": 18765,
   "admin_username": "admin",
-  "admin_password_file": "/etc/pro-llama-server/admin-password",
+  "admin_password_file": "/etc/prollama-pie/admin-password",
   "public_ports": {
     "ranges": [
       [8080, 8120]
@@ -90,6 +90,6 @@
       "gpu_ids": [0, 1]
     }
   },
-  "default_model_api_key_file": "/etc/pro-llama-server/model-keys",
+  "default_model_api_key_file": "/etc/prollama-pie/model-keys",
   "require_model_api_keys": true
 }

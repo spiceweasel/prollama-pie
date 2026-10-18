@@ -21,7 +21,7 @@ Before making a vulnerability public, contact the repository maintainer privatel
 ## Operational checklist
 
 - Pin and update Python dependencies and llama.cpp builds after verification.
-- Keep `/opt/pro-llama-server`, `/etc/pro-llama-server/proxy-settings.json`, nginx TLS keys, and sudoers configuration root-owned.
+- Keep `/opt/prollama-pie`, `/etc/prollama-pie/proxy-settings.json`, nginx TLS keys, and sudoers configuration root-owned.
 - Change/rotate administrator and model API keys; consider a local VPN rather than Internet exposure.
 - Restrict ports 8080-8120/8443 or your configured public ranges to trusted networks.
 - Never copy a local CA **private key** to client machines. Protect your backup of it or keep it offline.

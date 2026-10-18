@@ -26,7 +26,7 @@ def output(data, json_mode=False):
 
 def main():
     parser = argparse.ArgumentParser(prog="pro-llama", description="Manage llama-server instances without containers")
-    parser.add_argument("--config", default=os.environ.get("PRO_LLAMA_CONFIG", "/etc/pro-llama-server/config.json"))
+    parser.add_argument("--config", default=os.environ.get("PRO_LLAMA_CONFIG", "/etc/prollama-pie/config.json"))
     parser.add_argument("--json", action="store_true", help="machine-readable output")
     sub = parser.add_subparsers(dest="command", required=True)
     for cmd in ("ps", "status", "models", "scan", "profiles", "scenes", "doctor"):

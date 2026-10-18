@@ -1,8 +1,22 @@
-# pro-llama-server
+# 🥧 proLLaMa-Pie
+
+### Serving up slices of local LLMs. BAM!
 
 **One host. Many llama.cpp servers. One nginx TLS gateway. No Docker. No database service.**
 
-`pro-llama-server` is a Python supervisor for **your own `llama-server` executable**. It inventories local GGUF files, starts and monitors multiple model instances, records their launch options, allows presets for CPU/AMD ROCm/NVIDIA GPUs, and publishes each instance on an individually assigned **HTTPS port**, all using **one nginx certificate**. A responsive dashboard and Docker Compose-style CLI control the same supervisor.
+Welcome to **proLLaMa-Pie!**
+
+One machine. Multiple models. A whole lot of slices.
+
+proLLaMa-Pie is a lightweight, container-free orchestration platform for [llama.cpp](https://github.com/ggml-org/llama.cpp). Fire up multiple inference servers, allocate GPUs, monitor hardware resources, and serve every model securely through a single nginx reverse proxy.
+
+Built around **your own `llama-server` executable**, proLLaMa-Pie inventories local GGUF models, launches and monitors independent server instances, and manages their configurations. Each instance runs on its own dynamically allocated backend port and is exposed through an individually assigned **HTTPS port**, all secured by **one nginx TLS certificate**.
+
+A responsive web dashboard and Docker Compose-style CLI provide two convenient ways to manage your models, with support for CPU, AMD ROCm, and NVIDIA CUDA environments. Save your favorite configurations, optimize hardware utilization, and serve up as many slices as your system can handle.
+
+**Pick your models. Season your configurations. Serve up a slice.**
+
+**BAM! Let's kick local inference up a notch.**
 
 > **Release status: 0.1.0 initial implementation / public alpha.** The project has automated unit/smoke tests, but has **not** yet been validated against a production ROCm system, sustained inference traffic, all llama.cpp builds, or every Linux distribution. Read the [limitations](#limitations-and-operational-guarantees) before exposing it beyond a trusted LAN.
 
@@ -37,7 +51,7 @@
                            :8081 -> 127.0.0.1:18081 (llama-server B)
                            :8082 -> 127.0.0.1:18082 (llama-server C)
                                                      ^
-                             pro-llama-server daemon (prollama user)
+                             prollama-pie daemon (prollama user)
                                |                       |
                   control.sock (CLI)          atomic JSON state
                                |                       |
@@ -68,10 +82,10 @@ sudo apt install -y python3 python3-venv python3-pip nginx openssl sudo
 # Install the repo from this directory:
 sudo ./deploy/install.sh
 # Adjust paths for YOUR llama-server build and GGUF directories:
-sudoedit /etc/pro-llama-server/config.json
+sudoedit /etc/prollama-pie/config.json
 ```
 
-On Fedora, use `sudo dnf install python3 python3-pip nginx openssl sudo`, verify `python3 -m venv` works, and run the same install script. The installer does **not** overwrite existing configuration/password files; it installs the root-owned executable/helper, systemd unit, and creates a dedicated service account. Re-run after upgrading repo code, then `sudo systemctl restart pro-llama-server` if you deliberately want to restart the *supervisor* (running llama-server children stay alive).
+On Fedora, use `sudo dnf install python3 python3-pip nginx openssl sudo`, verify `python3 -m venv` works, and run the same install script. The installer does **not** overwrite existing configuration/password files; it installs the root-owned executable/helper, systemd unit, and creates a dedicated service account. Re-run after upgrading repo code, then `sudo systemctl restart prollama-pie` if you deliberately want to restart the *supervisor* (running llama-server children stay alive).
 
 **Change** these example fields before starting:
 
@@ -84,7 +98,7 @@ On Fedora, use `sudo dnf install python3 python3-pip nginx openssl sudo`, verify
 }
 ```
 
-Do not replace the entire JSON file with the small fragment above; edit the corresponding keys in `config/config.example.json` installed under `/etc/pro-llama-server/config.json`. GPU profile examples include CPU, ROCm GPU 0, CUDA GPU 1, and both; edit them to match your hardware.
+Do not replace the entire JSON file with the small fragment above; edit the corresponding keys in `config/config.example.json` installed under `/etc/prollama-pie/config.json`. GPU profile examples include CPU, ROCm GPU 0, CUDA GPU 1, and both; edit them to match your hardware.
 
 ### TLS: generate your own local CA and leaf certificate
 
@@ -96,20 +110,20 @@ Do not replace the entire JSON file with the small fragment above; edit the corr
 ./cert/generate_cert.sh llama.home.arpa 192.168.1.50 /tmp/pro-llama-pki
 
 sudo install -d -m 0700 /etc/nginx/ssl
-sudo install -o root -g root -m 0644 /tmp/pro-llama-pki/pro-llama-server.crt /etc/nginx/ssl/
-sudo install -o root -g root -m 0600 /tmp/pro-llama-pki/pro-llama-server.key /etc/nginx/ssl/
+sudo install -o root -g root -m 0644 /tmp/pro-llama-pki/prollama-pie.crt /etc/nginx/ssl/
+sudo install -o root -g root -m 0600 /tmp/pro-llama-pki/prollama-pie.key /etc/nginx/ssl/
 # Keep CA public cert available for enrolling clients; isolate CA private key
-sudo install -d -m 0700 /etc/pro-llama-server/pki
-sudo install -m 0644 /tmp/pro-llama-pki/pro-llama-ca.crt /etc/pro-llama-server/pki/
+sudo install -d -m 0700 /etc/prollama-pie/pki
+sudo install -m 0644 /tmp/pro-llama-pki/pro-llama-ca.crt /etc/prollama-pie/pki/
 # Move /tmp/pro-llama-pki/pro-llama-ca.key to OFFLINE secure storage.
 
-# In root-owned /etc/pro-llama-server/proxy-settings.json, match the hostname,
+# In root-owned /etc/prollama-pie/proxy-settings.json, match the hostname,
 # certificate paths, frontend admin port and backend admin port.
-sudoedit /etc/pro-llama-server/proxy-settings.json
+sudoedit /etc/prollama-pie/proxy-settings.json
 sudo systemctl enable --now nginx
 sudo /usr/local/sbin/pro-llama-nginx-apply  # checks nginx -t; graceful reload
-sudo systemctl enable --now pro-llama-server
-sudo systemctl status pro-llama-server --no-pager
+sudo systemctl enable --now prollama-pie
+sudo systemctl status prollama-pie --no-pager
 ```
 
 In `proxy-settings.json`, `listen_address` controls whether nginx listens only on `127.0.0.1` or on `0.0.0.0` for LAN access. `server_name` must match your certificate's DNS SAN. A **single** certificate is shared by all model HTTPS ports and the admin UI; certificates identify **hostnames/IPs, not ports**.
@@ -128,7 +142,7 @@ Copy **`pro-llama-ca.crt`**, not the leaf cert, to each trusted client:
 
 ```bash
 # On the server, place the PUBLIC CA cert somewhere your SSH account can read:
-sudo install -m 0644 /etc/pro-llama-server/pki/pro-llama-ca.crt /tmp/pro-llama-ca.crt
+sudo install -m 0644 /etc/prollama-pie/pki/pro-llama-ca.crt /tmp/pro-llama-ca.crt
 # On the client:
 scp user@server_machine:/tmp/pro-llama-ca.crt ./pro-llama-ca.crt
 # You can remove the temporary public certificate afterward.
@@ -148,11 +162,11 @@ Configure internal DNS or `/etc/hosts` so `llama.home.arpa` resolves to your act
 
 ```bash
 # Dashboard uses HTTP Basic, inside HTTPS (never use direct HTTP remotely)
-sudo cat /etc/pro-llama-server/admin-password
+sudo cat /etc/prollama-pie/admin-password
 # Username: admin (editable in config.json)
 
 # Default model endpoint API key (each line is one accepted key for llama.cpp)
-sudo cat /etc/pro-llama-server/model-keys
+sudo cat /etc/prollama-pie/model-keys
 
 # Example test, replace with actual hostname/key:
 curl --cacert ./pro-llama-ca.crt \
@@ -167,18 +181,18 @@ The default key file is passed to **every new** llama-server as `--api-key-file`
 To access the local Unix socket without `sudo`, add a trusted admin account to the `prollama` group, then log out/in. Group members have **full instance-management access**. Or run the CLI as the service account:
 
 ```bash
-sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama models
-sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama scan
-sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama profiles
-sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama doctor
-sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama up qwen-main qwen-32b \
+sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama models
+sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama scan
+sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama profiles
+sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama doctor
+sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama up qwen-main qwen-32b \
   --profile rocm-0 --port 8080 --ctx-size 32768 --gpu-layers 99 \
   --threads 8 --threads-batch 12 --parallel 2 --flash-attn auto
-sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama ps
-sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama logs qwen-main
-sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama down qwen-main
+sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama ps
+sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama logs qwen-main
+sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama down qwen-main
 # In a genuine emergency only:
-sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama down qwen-main --force
+sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama down qwen-main --force
 ```
 
 The `up` command creates a fresh named instance; it does not restart an existing one implicitly. Normal `down` switches the instance to `draining`: nginx stops accepting new traffic on its public port, but existing nginx workers and the backend process remain until established backend connections are gone. There is intentionally **no fixed force-kill timeout** while a connection may be active. Force stop is explicitly disruptive. `pro-llama ps` shows `draining` state until shutdown.
@@ -232,7 +246,7 @@ Import and apply with `pro-llama scene import ./two-rocms.json` then `pro-llama 
 
 ### GPU environments and multi-GPU
 
-Edit `/etc/pro-llama-server/config.json` to create arbitrarily many named profiles:
+Edit `/etc/prollama-pie/config.json` to create arbitrarily many named profiles:
 
 ```json
 "profiles": {
@@ -246,7 +260,7 @@ Edit `/etc/pro-llama-server/config.json` to create arbitrarily many named profil
 
 `gpu_ids` are **telemetry labels**, while the environment variables actually determine which GPUs llama.cpp can see. Check `rocminfo`, `rocm-smi`, `nvidia-smi`, and `llama-server --list-devices` because PCI/sysfs enumeration and runtime device order can differ. Selecting two visible GPUs makes them *available* to llama.cpp; to adjust **how** weights are split between them, use supported `--split-mode`, `--tensor-split`, or `--device` options via the model's saved launch `extra_args` field (subject to your build). The CPU profile **requires** `--n-gpu-layers 0`, and also sets `HIP_VISIBLE_DEVICES` empty for CPU-only.
 
-After editing profiles/config, restart the **supervisor** (`sudo systemctl restart pro-llama-server`), not nginx and not the existing llama-server children. Old children retain their original environment; newly launched processes use updated profiles.
+After editing profiles/config, restart the **supervisor** (`sudo systemctl restart prollama-pie`), not nginx and not the existing llama-server children. Old children retain their original environment; newly launched processes use updated profiles.
 
 ### Model cards and saved launch defaults
 
@@ -262,7 +276,7 @@ Register a model with card metadata:
 
 ## Web dashboard
 
-Open **`https://llama.home.arpa:8443/`** and authenticate with username `admin` and the contents of `/etc/pro-llama-server/admin-password`. It includes:
+Open **`https://llama.home.arpa:8443/`** and authenticate with username `admin` and the contents of `/etc/prollama-pie/admin-password`. It includes:
 
 1. CPU/RAM/VRAM utilization (5-second display refresh).
 2. Instance launch/stop, per-process settings, logs, health statuses, assigned ports.
@@ -308,7 +322,7 @@ The catalog supports selected GGUF metadata fields, and file size includes match
 
 ## Reverse proxy behavior
 
-The generated `/etc/nginx/conf.d/pro-llama-server.conf` is an **`http {}` include** as on Ubuntu/Fedora default nginx configs. It contains an HTTP-context `map` directive and one `server { listen ... ssl; }` block per active public port, plus the dashboard server. It intentionally contains **no global `worker_processes`/`events`/`http` nesting** and no manually hardcoded upstream IDs.
+The generated `/etc/nginx/conf.d/prollama-pie.conf` is an **`http {}` include** as on Ubuntu/Fedora default nginx configs. It contains an HTTP-context `map` directive and one `server { listen ... ssl; }` block per active public port, plus the dashboard server. It intentionally contains **no global `worker_processes`/`events`/`http` nesting** and no manually hardcoded upstream IDs.
 
 Nginx settings include TLS 1.2/1.3 only; separate root-owned cert/key; session cache with tickets disabled; 4k SSL buffer; websocket Upgrade support; Host/X-Forwarded headers; no proxy response/request buffering (suitable for SSE streaming); 3600s proxy read/send timeouts; no proxy cache/compression. **Nginx reloads are graceful**, so adding/removing ports preserves existing connections *under normal nginx behavior*. Nginx will fork new workers and retain old workers until current requests finish. **Do not configure a short `worker_shutdown_timeout` globally**, use `nginx -t` before reload, and avoid administrative hard restarts while streams run.
 
@@ -320,9 +334,9 @@ If a new public port is occupied by an unrelated service, pro-llama refuses it. 
 
 ## JSON storage and APIs
 
-`/var/lib/pro-llama-server/state.json` records models, instances, scenes, launch arguments, PID identities, and process status. `/var/lib/pro-llama-server/proxy.json` contains only validated integer port mappings; the root helper uses it to update nginx. All writes use temporary files + fsync + atomic replace. **Only one supervisor per state directory** should run; the daemon takes an exclusive `flock` lock on `.daemon.lock` to prevent concurrent writers, and systemd is the supported instance manager. Back up state, configuration, model metadata, and certs separately; back up private keys securely.
+`/var/lib/prollama-pie/state.json` records models, instances, scenes, launch arguments, PID identities, and process status. `/var/lib/prollama-pie/proxy.json` contains only validated integer port mappings; the root helper uses it to update nginx. All writes use temporary files + fsync + atomic replace. **Only one supervisor per state directory** should run; the daemon takes an exclusive `flock` lock on `.daemon.lock` to prevent concurrent writers, and systemd is the supported instance manager. Back up state, configuration, model metadata, and certs separately; back up private keys securely.
 
-The CLI connects to `/run/pro-llama-server/control.sock`; it is group-protected. The web API lives on the dashboard HTTPS listener:
+The CLI connects to `/run/prollama-pie/control.sock`; it is group-protected. The web API lives on the dashboard HTTPS listener:
 
 | Method/path | Purpose |
 |---|---|
@@ -350,12 +364,12 @@ curl --cacert pro-llama-ca.crt -u admin:YOUR_ADMIN_PASSWORD \
 ## Operation and troubleshooting
 
 ```bash
-sudo systemctl status pro-llama-server nginx --no-pager
-sudo journalctl -u pro-llama-server -n 150 --no-pager
+sudo systemctl status prollama-pie nginx --no-pager
+sudo journalctl -u prollama-pie -n 150 --no-pager
 sudo /usr/sbin/nginx -t
 sudo ss -ltnp | grep -E ':(8443|8080|18080|18765)\b'
-sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama doctor
-sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama logs INSTANCE_NAME
+sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama doctor
+sudo -u prollama /opt/prollama-pie/venv/bin/pro-llama logs INSTANCE_NAME
 ```
 
 **`502 Bad Gateway`:** model is loading/crashed or wrong backend port; inspect `pro-llama ps` and model logs. **Nginx refuses to reload:** check `nginx -t`, port collisions, cert readability and error log. **GPU telemetry empty:** ROCm sysfs entries absent or not readable, `nvidia-smi` missing, or user lacks privileges; see `rocm-smi` and `journalctl`. **`Permission denied` to GPU:** ensure system `prollama` is member of appropriate `render`/`video` groups, verify `/dev/kfd` and `/dev/dri/*`, and restart the supervisor for new group membership. **GGUF found but won't start:** confirm executable has required backend/features, `llama-server --help`, file permissions, quantization architecture and free memory. **HTTPS hostname mismatch:** regenerate certificate with correct SAN, install it and reload nginx; trust the private CA on client.
@@ -367,7 +381,7 @@ sudo -u prollama /opt/pro-llama-server/venv/bin/pro-llama logs INSTANCE_NAME
 - Bind llama-server instances to loopback. Only nginx terminates TLS; don't use a local listener on `0.0.0.0` for an unencrypted llama-server.
 - Limit publicly accessible frontend ports with both nginx configuration and a firewall. Use a VPN for off-LAN access.
 - Use nontrivial admin credentials and llama.cpp API-key files. Some upstream endpoints don't require the API key; consider separate front-end authentication if clients can be untrusted. The management dashboard does **not** proxy arbitrary commands to a shell.
-- The nginx helper is invoked as root through one exact sudoers command, not general `systemctl` privileges. Files in `/opt/pro-llama-server` and root settings must remain **root-owned and not writable by prollama**. Do not give group members unrestricted write access to code files or nginx TLS private key.
+- The nginx helper is invoked as root through one exact sudoers command, not general `systemctl` privileges. Files in `/opt/prollama-pie` and root settings must remain **root-owned and not writable by prollama**. Do not give group members unrestricted write access to code files or nginx TLS private key.
 - Each process launches with an argv list, not `/bin/sh -c`, reducing shell injection; however, trusted admins can configure extra llama.cpp flags and arbitrary local GGUF paths. Treat access to admin UI/Unix socket as powerful local process-management access.
 - Audit Python dependencies, validate TLS configuration, set backup/secret-rotation procedures, and perform real load tests before production rollout.
 
@@ -386,7 +400,7 @@ PRO_LLAMA_CONFIG=./config.local.json pro-llama-daemon
 Project layout:
 
 ```text
-pro-llama-server/
+prollama-pie/
 ├── pro_llama/
 │   ├── supervisor.py      # process launch/recovery, health, draining, scenes
 │   ├── daemon.py          # authenticated dashboard + JSON/Unix socket API

@@ -37,7 +37,7 @@ def authorize(request):
 @web.middleware
 async def auth_middleware(req, handler):
     if not authorize(req):
-        raise web.HTTPUnauthorized(headers={"WWW-Authenticate": 'Basic realm="pro-llama-server"'})
+        raise web.HTTPUnauthorized(headers={"WWW-Authenticate": 'Basic realm="prollama-pie"'})
     if req.method not in ("GET", "HEAD", "OPTIONS"):
         # JSON + custom header stop ordinary cross-site form posts. Same-origin
         # Origin is additionally required when a browser supplies it.
@@ -134,8 +134,8 @@ async def run(cfg):
         lock_fd.close()
 
 def main():
-    parser = argparse.ArgumentParser(description="pro-llama-server supervisor")
-    parser.add_argument("--config", default=os.environ.get("PRO_LLAMA_CONFIG", "/etc/pro-llama-server/config.json"))
+    parser = argparse.ArgumentParser(description="prollama-pie supervisor")
+    parser.add_argument("--config", default=os.environ.get("PRO_LLAMA_CONFIG", "/etc/prollama-pie/config.json"))
     args = parser.parse_args()
     cfg = config_load(args.config)
     try: asyncio.run(run(cfg))

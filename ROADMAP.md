@@ -28,7 +28,7 @@
 
         This override is a proposed enhancement, not currently supported yet.
 
-        It would allow a single installation of pro-llama-server to manage separate CPU, ROCm, and CUDA builds without switching the global executable.
+        It would allow a single installation of prollama-pie to manage separate CPU, ROCm, and CUDA builds without switching the global executable.
 
         We should also make the GPU resource manager backend-aware. Currently, gpu_ids uses numeric indices, so GPU 0 under ROCm and GPU 0 under CUDA could be confused when both vendors are installed on the same host.
 
