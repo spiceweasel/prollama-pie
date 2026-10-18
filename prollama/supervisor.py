@@ -196,7 +196,7 @@ class Supervisor:
                 dir_part = str(rel_path.parent).replace(os.sep, "-") if rel_path.parent != Path(".") else ""
                 base = re.sub("[^a-zA-Z0-9_.-]", "-", stem)[:56].strip("-.") or "model"
                 if dir_part:
-                    base = f"{dir_part}/{base}"
+                    base = f"{dir_part}-{base}"
                 if not base[0].isalnum(): base = "m" + base
                 mid = base
                 n = 2
