@@ -18,7 +18,7 @@ A responsive web dashboard and Docker Compose-style CLI provide two convenient w
 
 **BAM! Let's kick local inference up a notch.**
 
-> **Release status: 0.1.0 initial implementation / public alpha.** The project has automated unit/smoke tests, but has **not** yet been validated against a production ROCm system, sustained inference traffic, all llama.cpp builds, or every Linux distribution. Read the [limitations](#limitations-and-operational-guarantees) before exposing it beyond a trusted LAN.
+> **Release status: 0.1.0 initial implementation / public alpha.** The project has automated unit/smoke tests, but has **not** yet been validated against a production ROCm or CUDA system, sustained inference traffic, all llama.cpp builds, or every Linux distribution. Read the [limitations](#limitations-and-operational-guarantees) before exposing it beyond a trusted LAN.
 
 ## What it does
 
